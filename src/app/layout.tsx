@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import '@/styles/globals.css'
 import Providers from './providers'
-
-const inter = Inter({ subsets: ['latin'] })
+import Header from '@/components/common/Header'
+import css from './page.module.css'
 
 export const metadata: Metadata = {
   title: 'The Superchain Registry',
@@ -18,8 +17,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+      <body>
+        <Providers>
+          <>
+            <header className={css.header}>
+              <Header />
+            </header>
+
+            <main className={css.main}>{children}</main>
+          </>
+        </Providers>
       </body>
     </html>
   )

@@ -1,0 +1,12 @@
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 1201;
+}
+
+.main {
+  padding-top: var(--header-height);
+  min-height: 100vh;
+}

@@ -68,6 +68,15 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
       ...colors,
     },
     spacing: base,
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1288,
+        xl: 1536,
+      },
+    },
     shape: {
       borderRadius: 6,
     },
@@ -137,74 +146,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           sizeLarge: { fontSize: '16px' },
         },
       },
-      MuiAccordion: {
-        variants: [
-          {
-            props: { variant: 'elevation' },
-            style: ({ theme }) => ({
-              border: 'none',
-              boxShadow: '0',
-              '&:not(:last-of-type)': {
-                borderRadius: '0 !important',
-                borderBottom: `1px solid ${theme.palette.border.light}`,
-              },
-              '&:last-of-type': {
-                borderBottomLeftRadius: '8px',
-              },
-            }),
-          },
-        ],
-        styleOverrides: {
-          root: ({ theme }) => ({
-            transition: 'background 0.2s, border 0.2s',
-            borderRadius: theme.shape.borderRadius,
-            border: `1px solid ${theme.palette.border.light}`,
-            overflow: 'hidden',
-
-            '&::before': {
-              content: 'none',
-            },
-
-            '&:hover': {
-              borderColor: theme.palette.secondary.light,
-            },
-
-            '&:hover > .MuiAccordionSummary-root': {
-              background: theme.palette.background.light,
-            },
-
-            '&.Mui-expanded': {
-              margin: 0,
-              borderColor: theme.palette.secondary.light,
-            },
-
-            '&.Mui-expanded > .MuiAccordionSummary-root': {
-              background: theme.palette.background.light,
-            },
-          }),
-        },
-      },
-      MuiAccordionSummary: {
-        styleOverrides: {
-          root: {
-            '&.Mui-expanded': {
-              minHeight: '48px',
-            },
-          },
-          content: {
-            '&.Mui-expanded': {
-              margin: '12px 0',
-            },
-          },
-        },
-      },
-      MuiAccordionDetails: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            padding: theme.spacing(2),
-          }),
-        },
-      },
       MuiCard: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -212,18 +153,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
             boxSizing: 'border-box',
             border: '2px solid transparent',
             boxShadow: 'none',
-          }),
-        },
-      },
-      MuiDialog: {
-        defaultProps: {
-          fullWidth: true,
-        },
-      },
-      MuiDialogContent: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            padding: theme.spacing(3),
           }),
         },
       },
@@ -249,16 +178,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           }),
         },
       },
-      MuiPopover: {
-        defaultProps: {
-          elevation: 2,
-        },
-        styleOverrides: {
-          paper: {
-            overflow: 'visible',
-          },
-        },
-      },
       MuiIconButton: {
         styleOverrides: {
           sizeSmall: {
@@ -271,50 +190,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           root: {
             textTransform: 'none',
           },
-        },
-      },
-      MuiAlert: {
-        styleOverrides: {
-          standardError: ({ theme }) => ({
-            '& .MuiAlert-icon': {
-              color: theme.palette.error.main,
-            },
-            '&.MuiPaper-root': {
-              backgroundColor: theme.palette.error.background,
-            },
-            border: `1px solid ${theme.palette.error.main}`,
-          }),
-          standardInfo: ({ theme }) => ({
-            '& .MuiAlert-icon': {
-              color: theme.palette.info.main,
-            },
-            '&.MuiPaper-root': {
-              backgroundColor: theme.palette.info.background,
-            },
-            border: `1px solid ${theme.palette.info.main}`,
-          }),
-          standardSuccess: ({ theme }) => ({
-            '& .MuiAlert-icon': {
-              color: theme.palette.success.main,
-            },
-            '&.MuiPaper-root': {
-              backgroundColor: theme.palette.success.background,
-            },
-            border: `1px solid ${theme.palette.success.main}`,
-          }),
-          standardWarning: ({ theme }) => ({
-            '& .MuiAlert-icon': {
-              color: theme.palette.warning.main,
-            },
-            '&.MuiPaper-root': {
-              backgroundColor: theme.palette.warning.background,
-            },
-            border: `1px solid ${theme.palette.warning.main}`,
-          }),
-          root: ({ theme }) => ({
-            color: theme.palette.text.primary,
-            padding: '12px 16px',
-          }),
         },
       },
       MuiTableHead: {
@@ -381,44 +256,12 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           }),
         },
       },
-      MuiCheckbox: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            color: theme.palette.primary.main,
-          }),
-        },
-      },
-      MuiOutlinedInput: {
-        styleOverrides: {
-          notchedOutline: ({ theme }) => ({
-            borderColor: theme.palette.border.main,
-          }),
-          root: ({ theme }) => ({
-            borderColor: theme.palette.border.main,
-          }),
-        },
-      },
       MuiSvgIcon: {
         styleOverrides: {
           fontSizeSmall: {
             width: '1rem',
             height: '1rem',
           },
-        },
-      },
-      MuiFilledInput: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            borderRadius: 4,
-            backgroundColor: theme.palette.background.paper,
-            border: '1px solid transparent',
-            transition: 'border-color 0.2s',
-
-            '&:hover, &:focus, &.Mui-focused': {
-              backgroundColor: theme.palette.background.paper,
-              borderColor: theme.palette.primary.main,
-            },
-          }),
         },
       },
       MuiSelect: {
@@ -451,24 +294,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           }),
         },
       },
-      MuiBackdrop: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            backgroundColor: alpha(theme.palette.backdrop.main, 0.75),
-          }),
-        },
-      },
-      MuiSwitch: {
-        defaultProps: {
-          color: isDarkMode ? undefined : 'success',
-        },
-        styleOverrides: {
-          thumb: () => ({
-            boxShadow:
-              '0px 2px 6px -1px rgba(0, 0, 0, 0.2), 0px 1px 4px rgba(0, 0, 0, 0.14), 0px 1px 4px rgba(0, 0, 0, 0.14)',
-          }),
-        },
-      },
       MuiLink: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -476,13 +301,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
             '&:hover': {
               color: theme.palette.primary.light,
             },
-          }),
-        },
-      },
-      MuiLinearProgress: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            backgroundColor: theme.palette.border.light,
           }),
         },
       },
