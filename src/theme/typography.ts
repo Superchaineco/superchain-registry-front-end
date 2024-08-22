@@ -1,7 +1,7 @@
 import type { TypographyOptions } from '@mui/material/styles/createTypography'
 import { Inter } from 'next/font/google'
 
-const inter = Inter({ weight: ['700'], subsets: ['latin'] })
+const inter = Inter({ weight: ['100', '400', '500', '700'], subsets: ['latin'] })
 
 const typography: TypographyOptions = {
   fontFamily: inter.style.fontFamily,
@@ -21,7 +21,8 @@ const typography: TypographyOptions = {
   },
   h4: {
     fontSize: '20px',
-    lineHeight: '26px',
+    lineHeight: '22px',
+    fontWeight: 500,
   },
   h5: {
     fontSize: '16px',
@@ -34,6 +35,7 @@ const typography: TypographyOptions = {
   body2: {
     fontSize: '14px',
     lineHeight: '20px',
+    fontWeight: 400,
   },
   caption: {
     fontSize: '12px',

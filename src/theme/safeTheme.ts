@@ -145,16 +145,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           sizeLarge: { fontSize: '16px' },
         },
       },
-      MuiCard: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            borderRadius: theme.shape.borderRadius,
-            boxSizing: 'border-box',
-            border: '2px solid transparent',
-            boxShadow: 'none',
-          }),
-        },
-      },
       MuiDivider: {
         styleOverrides: {
           root: ({ theme }) => ({
