@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const Header = (): ReactElement => {
   return (
-    <Paper className={css.container} elevation={1} sx={{borderRadius: 0}}>
+    <Paper className={css.container} elevation={1} sx={{ borderRadius: 0 }}>
       <Container>
         <Stack direction="row" justifyContent={{ xs: 'center', md: 'start' }}>
           <Link href="/" style={{ display: 'contents' }}>
