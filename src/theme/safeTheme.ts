@@ -92,9 +92,16 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
       MuiTableCell: {
         styleOverrides: {
           head: ({ theme }) => ({
-            ...theme.typography.body1,
-            color: theme.palette.primary.light,
+            ...theme.typography.body2,
+            color: theme.palette.text.primary,
+            fontWeight: 500,
+            padding: 12,
+            whiteSpace: 'nowrap',
           }),
+          body: {
+            whiteSpace: 'nowrap',
+            padding: 12,
+          },
         },
       },
       MuiButton: {
@@ -280,16 +287,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           }),
           arrow: ({ theme }) => ({
             color: theme.palette.text.primary,
-          }),
-        },
-      },
-      MuiLink: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            fontWeight: 700,
-            '&:hover': {
-              color: theme.palette.primary.light,
-            },
           }),
         },
       },
