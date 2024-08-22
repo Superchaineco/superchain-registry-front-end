@@ -1,3 +1,5 @@
+import SafeThemeProvider from '@/theme/SafeThemeProvider'
+
 export default function Providers({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return <SafeThemeProvider>{children}</SafeThemeProvider>
 }
