@@ -1,0 +1,11 @@
+.containerPopover {
+  position: absolute;
+  margin-top: var(--space-2);
+  z-index: 999;
+}
+
+.containerListPopover {
+  box-shadow: 2px 2px 4px 0px #00000040;
+  -webkit-box-shadow: 2px 2px 4px 0px #00000040;
+  -moz-box-shadow: 2px 2px 4px 0px #00000040;
+}

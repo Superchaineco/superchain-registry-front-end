@@ -181,13 +181,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           },
         },
       },
-      MuiToggleButton: {
-        styleOverrides: {
-          root: {
-            textTransform: 'none',
-          },
-        },
-      },
       MuiTableHead: {
         styleOverrides: {
           root: ({ theme }) => ({
@@ -260,17 +253,6 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           },
         },
       },
-      MuiSelect: {
-        defaultProps: {
-          MenuProps: {
-            sx: {
-              '& .MuiPaper-root': {
-                overflow: 'auto',
-              },
-            },
-          },
-        },
-      },
       MuiTooltip: {
         styleOverrides: {
           tooltip: ({ theme }) => ({
@@ -288,6 +270,11 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
           arrow: ({ theme }) => ({
             color: theme.palette.text.primary,
           }),
+        },
+      },
+      MuiCheckbox: {
+        defaultProps: {
+          disableRipple: true,
         },
       },
     },
