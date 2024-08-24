@@ -1,5 +1,5 @@
 'use client'
-import FilterCheckboxList from '@/components/common/FilterCheckboxList'
+import FilterCheckboxList from '@/components/chainsOverview/ChainsSearchTable/ChainsFilters/FilterCheckboxList'
 import inputBoxStyle from '@/theme/inputBoxStyle'
 import { Stack, Button } from '@mui/material'
 import { useContext, type ReactElement } from 'react'
