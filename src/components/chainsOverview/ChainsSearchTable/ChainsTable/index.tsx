@@ -4,8 +4,15 @@ import TableCellWithHelp from './TableCellWithHelp'
 import Image from 'next/image'
 import { type ChainInfo } from '@/types/chainInfo'
 import { useQueryChains } from '@/features/chainsOverview/hooks/useQueryChains'
+import ChainsTableSkeleton from './Skeleton'
+import chainsOverviewService from '@/features/chainsOverview/services/chainsOverview.service'
+import { useQuery } from '@tanstack/react-query'
 
-const ChainsTable = ({ data }: { data: ChainInfo[] }): ReactElement => {
+const ChainsTable = (): ReactElement => {
+  const { data, isLoading, error } = useQuery<ChainInfo[]>({
+    queryKey: ['getChainInfo'],
+    queryFn: async () => await chainsOverviewService.getChainsInfo(),
+  })
   const { filters, search } = useQueryChains()
 
   const filteredChains = useMemo(() => {
@@ -70,36 +77,40 @@ const ChainsTable = ({ data }: { data: ChainInfo[] }): ReactElement => {
             <TableCell align="right">Block Time</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {filteredChains.map((info, index) => (
-            <TableRow key={index}>
-              <TableCell sx={{ padding: '24px' }}>
-                <Stack direction="row" my="6px" spacing={1} alignItems="center">
-                  <div style={{ width: '19px' }}>
-                    <span>{index + 1}</span>
-                  </div>
-                  <Stack direction="row" gap="6px" alignItems="center">
-                    <Image src="/images/optimism.png" alt="Superchain" width={24} height={24} />
-                    <span>{info.name}</span>
+        {isLoading ? (
+          <ChainsTableSkeleton />
+        ) : (
+          <TableBody>
+            {filteredChains.map((info, index) => (
+              <TableRow key={index}>
+                <TableCell sx={{ padding: '24px' }}>
+                  <Stack direction="row" my="6px" spacing={1} alignItems="center">
+                    <div style={{ width: '19px' }}>
+                      <span>{index + 1}</span>
+                    </div>
+                    <Stack direction="row" gap="6px" alignItems="center">
+                      <Image src="/images/optimism.png" alt="Superchain" width={24} height={24} />
+                      <span>{info.name}</span>
+                    </Stack>
                   </Stack>
-                </Stack>
-              </TableCell>
-              <TableCell align="right">{info.layer}</TableCell>
-              <TableCell align="right">{info.status}</TableCell>
-              <TableCell align="right">{info.configuration}</TableCell>
-              <TableCell align="right">{info.upgradeKeys}</TableCell>
-              <TableCell align="right">{info.faultProofs}</TableCell>
-              <TableCell align="right">{info.decentStage}</TableCell>
-              <TableCell align="right">
-                {info.charter !== 'N/A' ? <Link href={info.charterLink}>{info.charter}</Link> : 'None'}
-              </TableCell>
-              <TableCell align="right">
-                {info.dataAvail ? <Link href={info.dataAvailLink}>{info.dataAvail}</Link> : 'None'}
-              </TableCell>
-              <TableCell align="right">{info.blockTime}s</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+                </TableCell>
+                <TableCell align="right">{info.layer}</TableCell>
+                <TableCell align="right">{info.status}</TableCell>
+                <TableCell align="right">{info.configuration}</TableCell>
+                <TableCell align="right">{info.upgradeKeys}</TableCell>
+                <TableCell align="right">{info.faultProofs}</TableCell>
+                <TableCell align="right">{info.decentStage}</TableCell>
+                <TableCell align="right">
+                  {info.charter !== 'N/A' ? <Link href={info.charterLink}>{info.charter}</Link> : 'None'}
+                </TableCell>
+                <TableCell align="right">
+                  {info.dataAvail ? <Link href={info.dataAvailLink}>{info.dataAvail}</Link> : 'None'}
+                </TableCell>
+                <TableCell align="right">{info.blockTime}s</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        )}
       </Table>
     </TableContainer>
   )
