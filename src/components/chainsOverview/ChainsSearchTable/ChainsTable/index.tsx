@@ -1,4 +1,4 @@
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Link } from '@mui/material'
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Link, Alert } from '@mui/material'
 import { useMemo, type ReactElement } from 'react'
 import TableCellWithHelp from './TableCellWithHelp'
 import Image from 'next/image'
@@ -45,6 +45,10 @@ const ChainsTable = (): ReactElement => {
 
     return filtered
   }, [data, filters, search])
+
+  if(error){
+    return <Alert severity="error" sx={{justifyContent: "center"}} >An error occurred while loading data.</Alert>
+  }
 
   return (
     <TableContainer
