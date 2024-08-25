@@ -1,7 +1,7 @@
 'use client'
 import inputBoxStyle from '@/theme/inputBoxStyle'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import { Badge, Box, Button, Checkbox, Typography, List, ListItem } from '@mui/material'
+import { Badge, Box, Button, Checkbox, Typography, List, ListItem, Stack } from '@mui/material'
 import { useEffect, useId, useState, type ReactElement } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import css from './styles.module.css'
@@ -9,10 +9,12 @@ import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
 import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined'
 import { type ChainInfo } from '@/types/chainInfo'
 import { useQueryChains } from '@/features/chainsOverview/hooks/useQueryChains'
+import Image from 'next/image'
 
 type FilterValue = {
   text: string
   value: string
+  srcImage?: string
 }
 
 const FilterCheckboxList = ({
@@ -79,7 +81,7 @@ const FilterCheckboxList = ({
               className={css.containerListPopover}
               sx={{ ...inputBoxStyle, height: null, padding: 0, border: 1, borderColor: 'border.light' }}
             >
-              {filters.map(({ value, text }) => (
+              {filters.map(({ value, text, srcImage }) => (
                 <ListItem
                   key={value}
                   divider
@@ -95,7 +97,10 @@ const FilterCheckboxList = ({
                     />
                   }
                 >
-                  <Typography variant="body2">{text}</Typography>
+                  <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
+                    {srcImage && <Image src={srcImage} alt="icon" width={16} height={16} />}
+                    <Typography variant="body2">{text}</Typography>
+                  </Stack>
                 </ListItem>
               ))}
             </List>

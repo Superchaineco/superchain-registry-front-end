@@ -54,10 +54,10 @@ const ChainsFilters = (): ReactElement => {
           idSelected={idSelected}
           onClick={toggleFilter}
           filters={[
-            { text: 'Etherium', value: 'ETH-DA' },
-            { text: 'Celestia', value: '2' },
-            { text: 'Eigen', value: '3' },
-            { text: 'Avail', value: '4' },
+            { text: 'Etherium', value: 'ETH-DA', srcImage: '/images/ethereum.png' },
+            { text: 'Celestia', value: '2', srcImage: '/images/celestia.png' },
+            { text: 'Eigen', value: '3', srcImage: '/images/eigen.png' },
+            { text: 'Avail', value: '4', srcImage: '/images/avail.png' },
           ]}
         />
         <Button
