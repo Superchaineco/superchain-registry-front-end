@@ -211,22 +211,7 @@ const createSafeTheme = (mode: PaletteMode): Theme => {
             '& .MuiTableCell-root': {
               paddingTop: theme.spacing(1),
               paddingBottom: theme.spacing(1),
-              borderBottom: 'none',
-            },
-
-            [theme.breakpoints.down('sm')]: {
-              '& .MuiTableCell-root:first-of-type': {
-                paddingRight: theme.spacing(1),
-              },
-
-              '& .MuiTableCell-root:not(:first-of-type):not(:last-of-type)': {
-                paddingLeft: theme.spacing(1),
-                paddingRight: theme.spacing(1),
-              },
-
-              '& .MuiTableCell-root:last-of-type': {
-                paddingLeft: theme.spacing(1),
-              },
+              borderBottom: `1px solid ${theme.palette.border.light}`,
             },
 
             '& .MuiTableRow-root': {
