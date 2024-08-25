@@ -2,12 +2,13 @@
 import inputBoxStyle from '@/theme/inputBoxStyle'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { Badge, Box, Button, Checkbox, Typography, List, ListItem } from '@mui/material'
-import { useContext, useEffect, useId, useState, type ReactElement } from 'react'
+import { useEffect, useId, useState, type ReactElement } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import css from './styles.module.css'
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
 import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined'
-import { QueryChainsContext } from '@/components/chainsOverview/ChainsSearchTable'
+import { type ChainInfo } from '@/types/chainInfo'
+import { useQueryChains } from '@/features/chainsOverview/hooks/useQueryChains'
 
 type FilterValue = {
   text: string
@@ -16,34 +17,37 @@ type FilterValue = {
 
 const FilterCheckboxList = ({
   label,
+  column,
   idSelected,
   filters,
   onClick,
 }: {
   label: string
+  column: keyof ChainInfo
   idSelected?: string | null
   filters: Array<FilterValue>
   onClick: (mensaje: string) => void
 }): ReactElement => {
-  const queryContext = useContext(QueryChainsContext)
+  const { addFilter, removeFilter, filters: contextFilters } = useQueryChains()
 
   const id = useId()
   const [show, setShow] = useState<boolean>(false)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    queryContext?.dispatch({
-      type: event.target.checked ? 'ADD_FILTER' : 'REMOVE_FILTER',
-      payload: { column: label, value: event.target.value },
-    })
+    const filter = { column, value: event.target.value }
+
+    if (event.target.checked) {
+      addFilter(filter)
+    } else {
+      removeFilter(filter)
+    }
   }
 
   useEffect(() => {
     setShow(idSelected !== null)
   }, [idSelected])
 
-  const countChecked = filters.filter(({ value }) =>
-    queryContext?.queryChainsState.filters[label]?.includes(value),
-  ).length
+  const countChecked = contextFilters.filter((filter) => filter.column === column).length
 
   return (
     <Box position="relative">
@@ -83,7 +87,7 @@ const FilterCheckboxList = ({
                     <Checkbox
                       value={value}
                       edge="end"
-                      checked={queryContext?.queryChainsState.filters[label]?.includes(value)}
+                      checked={contextFilters.some((filter) => filter.value === value && filter.column === column)}
                       onChange={handleChange}
                       size="small"
                       checkedIcon={<CheckBoxOutlinedIcon />}

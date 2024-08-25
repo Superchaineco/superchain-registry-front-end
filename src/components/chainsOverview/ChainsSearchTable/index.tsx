@@ -1,40 +1,35 @@
 'use client'
 import { Stack } from '@mui/material'
 import ChainsTable from './ChainsTable'
-import { type ChangeEvent, createContext, type Dispatch, useReducer, type ReactElement } from 'react'
+import { type ReactElement } from 'react'
 import ChainsFilters from './ChainsFilters'
 import Grid from '@mui/material/Unstable_Grid2'
-import SearchInput from '@/components/common/SearchInput'
-import { initialState, type QueryChainsAction, queryChainsReducer, type QueryChainsState } from './queryChainsReducer'
-
-interface QueryChainsContextType {
-  queryChainsState: QueryChainsState
-  dispatch: Dispatch<QueryChainsAction>
-}
-
-export const QueryChainsContext = createContext<QueryChainsContextType | undefined>(undefined)
+import { useQuery } from '@tanstack/react-query'
+import chainsOverviewService from '@/features/chainsOverview/services/chainsOverview.service'
+import { type ChainInfo } from '@/types/chainInfo'
+import ChainsSearcher from './ChainsSearcher'
+import { QueryChainsProvider } from '@/features/chainsOverview/context/queryChainsContext'
 
 const ChainsSearchTable = (): ReactElement => {
-  const [queryChainsState, dispatch] = useReducer(queryChainsReducer, initialState)
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'SEARCH', payload: event.currentTarget.value })
-  }
+  const { data, isLoading, error } = useQuery<ChainInfo[]>({
+    queryKey: ['getChainInfo'],
+    queryFn: async () => await chainsOverviewService.getChainsInfo(),
+  })
 
   return (
-    <QueryChainsContext.Provider value={{ queryChainsState, dispatch }}>
+    <QueryChainsProvider>
       <Stack spacing={2}>
         <Grid container columns={10} gap={{ xs: 2, md: 0 }}>
           <Grid xs={12} md={8}>
             <ChainsFilters />
           </Grid>
           <Grid xs={12} md={2}>
-            <SearchInput value={queryChainsState.search} onChange={handleChange} />
+            <ChainsSearcher />
           </Grid>
         </Grid>
-        <ChainsTable />
+        {data && <ChainsTable data={data} />}
       </Stack>
-    </QueryChainsContext.Provider>
+    </QueryChainsProvider>
   )
 }
 

@@ -1,11 +1,13 @@
-type FilterColumnType = {
-  column: string
+import { type ChainInfo } from '@/types/chainInfo'
+
+export type FilterColumnType = {
+  column: keyof ChainInfo
   value: string
 }
 
 export interface QueryChainsState {
   search: string
-  filters: { [column: string]: Array<string> }
+  filters: FilterColumnType[]
 }
 
 export type QueryChainsAction =
@@ -16,31 +18,22 @@ export type QueryChainsAction =
 
 export const initialState: QueryChainsState = {
   search: '',
-  filters: {},
+  filters: [],
 }
 
 export const queryChainsReducer = (state: QueryChainsState, action: QueryChainsAction): QueryChainsState => {
-  const filtersColumnResolver = (column: string) => {
-    let filtersColumn = state.filters[column]
-    if (filtersColumn === undefined) {
-      filtersColumn = []
-    }
-    return filtersColumn
-  }
-
   switch (action.type) {
     case 'SEARCH':
       return { ...state, search: action.payload }
     case 'ADD_FILTER':
-      let column = action.payload.column
-      let newValue = action.payload.value
-      return { ...state, filters: { ...state.filters, [column]: [...filtersColumnResolver(column), newValue] } }
+      return { ...state, filters: [...state.filters, action.payload] }
     case 'REMOVE_FILTER':
-      let columnRm = action.payload.column
-      let removeValue = action.payload.value
+      let removeFilter = action.payload
       return {
         ...state,
-        filters: { ...state.filters, [columnRm]: filtersColumnResolver(columnRm).filter((v) => v != removeValue) },
+        filters: state.filters.filter(
+          (filter) => !(filter.column === removeFilter.column && filter.value === removeFilter.value),
+        ),
       }
     case 'CLEAR_ALL':
       return initialState

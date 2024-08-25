@@ -2,16 +2,16 @@
 import FilterCheckboxList from '@/components/chainsOverview/ChainsSearchTable/ChainsFilters/FilterCheckboxList'
 import inputBoxStyle from '@/theme/inputBoxStyle'
 import { Stack, Button } from '@mui/material'
-import { useContext, type ReactElement } from 'react'
-import { useToggleFilters } from './useToggleFilters'
-import { QueryChainsContext } from '..'
+import { type ReactElement } from 'react'
+import { useToggleFilters } from '../../../../features/chainsOverview/hooks/useToggleFilters'
+import { useQueryChains } from '@/features/chainsOverview/hooks/useQueryChains'
 
 const ChainsFilters = (): ReactElement => {
-  const queryContext = useContext(QueryChainsContext)
+  const { clearAll } = useQueryChains()
   const { toggleFilter, hideFilters, idSelected, divRef } = useToggleFilters()
 
   const handleClickClearAll = () => {
-    queryContext?.dispatch({ type: 'CLEAR_ALL' })
+    clearAll()
     hideFilters()
   }
 
@@ -20,6 +20,7 @@ const ChainsFilters = (): ReactElement => {
       <Stack ref={divRef} direction="row" spacing="12px" useFlexGap flexWrap="wrap">
         <FilterCheckboxList
           label="Layer"
+          column="layer"
           idSelected={idSelected}
           onClick={toggleFilter}
           filters={[
@@ -29,6 +30,7 @@ const ChainsFilters = (): ReactElement => {
         />
         <FilterCheckboxList
           label="Status"
+          column="status"
           idSelected={idSelected}
           onClick={toggleFilter}
           filters={[
@@ -38,6 +40,7 @@ const ChainsFilters = (): ReactElement => {
         />
         <FilterCheckboxList
           label="Decent. Stage"
+          column="decentStage"
           idSelected={idSelected}
           onClick={toggleFilter}
           filters={[
@@ -47,10 +50,11 @@ const ChainsFilters = (): ReactElement => {
         />
         <FilterCheckboxList
           label="Data Avail."
+          column="dataAvail"
           idSelected={idSelected}
           onClick={toggleFilter}
           filters={[
-            { text: 'Etherium', value: '1' },
+            { text: 'Etherium', value: 'ETH-DA' },
             { text: 'Celestia', value: '2' },
             { text: 'Eigen', value: '3' },
             { text: 'Avail', value: '4' },
