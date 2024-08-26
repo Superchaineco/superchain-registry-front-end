@@ -5,7 +5,6 @@ import NodeCache from 'node-cache'
 
 const cache = new NodeCache({ stdTTL: 86400 }) // 86400 segundos = 24 horas
 
-
 const BASE_URL = 'https://raw.githubusercontent.com/ethereum-optimism/superchain-registry/main'
 const CHAIN_LIST_URL = `${BASE_URL}/chainList.toml`
 const CONFIGS_URL = `${BASE_URL}/superchain/configs`
@@ -20,7 +19,6 @@ async function getTomlDataCached(url: string): Promise<string> {
   cache.set(url, response.data)
   return response.data
 }
-
 
 export async function getChainInfoListService(): Promise<ChainInfo[]> {
   try {
