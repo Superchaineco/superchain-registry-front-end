@@ -8,7 +8,7 @@ const ChainsTableSkeleton = (): ReactElement => {
         <TableRow key={index}>
           <TableCell component="th" scope="row" sx={{ padding: '24px' }}>
             <Stack direction="row" spacing={1} sx={{ paddingY: '6px' }}>
-              <Skeleton animation="wave" variant="text" width={18} />
+              {/* <Skeleton animation="wave" variant="text" width={18} /> */}
               <Skeleton animation="wave" variant="circular" width={24} height={24} />
               <Skeleton animation="wave" variant="text" width={120} />
             </Stack>

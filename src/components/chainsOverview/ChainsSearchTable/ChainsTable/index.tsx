@@ -104,9 +104,9 @@ const ChainsTable = (): ReactElement => {
               <TableRow key={index}>
                 <TableCell sx={{ padding: '24px' }}>
                   <Stack direction="row" my="6px" spacing={1} alignItems="center">
-                    <div style={{ width: '19px' }}>
+                    {/* <div style={{ width: '19px' }}>
                       <span>{index + 1}</span>
-                    </div>
+                    </div> */}
                     <Stack direction="row" gap="6px" alignItems="center">
                       <Image src="/images/optimism.png" alt="Superchain" width={24} height={24} />
                       <span>{info.name}</span>
