@@ -2,11 +2,13 @@ import axios from 'axios'
 import * as toml from 'toml'
 import { ChainInfo } from '../types/chain-info'
 import NodeCache from 'node-cache'
-
 import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
+import { google } from 'googleapis';
+import * as fs from 'fs';
+import * as path from 'path';
 
-// 1. ABI mínima para ERC-20: name() y symbol()
+
 const erc20MinimalAbi = [
   {
     "type": "function",
@@ -24,11 +26,7 @@ const erc20MinimalAbi = [
   }
 ]
 
-
-
-
-
-const cache = new NodeCache({ stdTTL: 86400 }) // 86400 segundos = 24 horas
+const cache = new NodeCache({ stdTTL: 86400 })
 
 const BASE_URL = 'https://raw.githubusercontent.com/ethereum-optimism/superchain-registry/main'
 const CHAIN_LIST_URL = `${BASE_URL}/chainList.toml`
@@ -47,9 +45,51 @@ const SECURITY_COUNCIL = 'Security Council'
 
 const client = createPublicClient({
   chain: mainnet,
-  transport: http() // Por defecto, usará https://rpc.ankr.com/eth o similar
+  transport: http()
 })
 
+
+async function dumpInfo(chainInfo: ChainInfo[]) {
+  try {
+
+    const KEYFILEPATH = path.join(__dirname, '..', 'credentials.json');
+    const auth = new google.auth.GoogleAuth({
+      keyFile: KEYFILEPATH,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+
+    const sheets = google.sheets({ version: 'v4', auth });
+
+    const spreadsheetId = 'TU_SPREADSHEET_ID_AQUI';
+
+
+    const fecha = new Date().toLocaleString('es-ES'); // Ajusta el formato según necesites
+    const otroDato = 'Ejemplo de dato desde TS';
+
+    const values = [[fecha, otroDato]];
+
+
+    const range = 'Hoja1!A:B';
+
+
+    const request = {
+      spreadsheetId,
+      range,
+      valueInputOption: 'USER_ENTERED',  // Ajusta cómo quieres que se interpreten los datos
+      insertDataOption: 'INSERT_ROWS',   // Inserta filas en blanco si es necesario
+      requestBody: {
+        values,
+      },
+    };
+
+    await sheets.spreadsheets.values.append(request);
+
+    console.log('Datos agregados correctamente a la hoja de cálculo.');
+  } catch (error) {
+    console.error('Error escribiendo en Google Sheets:', error);
+  }
+}
 
 
 async function getCachedTokenInfo(tokenAddress: `0x${string}`): Promise<string> {
@@ -116,20 +156,20 @@ async function processChain(chain: any): Promise<ChainInfo> {
   chainInfo.name = chain.name
   chainInfo.layer = chain.parent?.type || UNKNOWN_VALUE
   chainInfo.status = chainInfo.type = getStatus(chain.identifier)
-  chainInfo.configuration = getConfiguration(chain.superchain_level)
-  chainInfo.scStatus = chain.superchain_level
+  chainInfo.configuration = getConfiguration(chain.superchain_level)  
   if (chain.gas_paying_token)
     chainInfo.gasToken = await getCachedTokenInfo(chain.gas_paying_token)
 
   const detailUrl = `${CONFIGS_URL}/${chain.identifier}${TOML_EXTENSION}`
-  return await setChainInfoDetail(detailUrl, chainInfo)
+  return await setChainInfoDetail(detailUrl, chainInfo, chain)
 }
 
-async function setChainInfoDetail(url: string, chainInfo: ChainInfo): Promise<ChainInfo> {
+async function setChainInfoDetail(url: string, chainInfo: ChainInfo, chain:any): Promise<ChainInfo> {
   try {
     const response = await getTomlDataCached(url)
     const detailData = toml.parse(response)
 
+    chainInfo.scStatus = getCScStatus(chain.superchain_level, detailData.standard_chain_candidate)
     chainInfo.charter = detailData.standard_chain_candidate ? STANDARD_VALUE : NONE_VALUE
     chainInfo.upgradeKeys = getUpgradeKeys(detailData.addresses)
     chainInfo.faultProofs = getFaultProofs(detailData.addresses)
@@ -169,4 +209,10 @@ function getStatus(identifier: string): string {
 function getConfiguration(superchainLevel: number): string {
   if (superchainLevel === 1) return STANDARD_VALUE
   else return 'Frontier'
+}
+
+function getCScStatus(superchainLevel: number, standard_chain_candidate: boolean): string {
+  if (superchainLevel === 1) return 'Green'
+  if(standard_chain_candidate) return 'Yellow'
+  else return 'Grey'
 }
