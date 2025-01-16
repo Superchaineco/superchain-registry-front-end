@@ -3,6 +3,31 @@ import * as toml from 'toml'
 import { ChainInfo } from '../types/chain-info'
 import NodeCache from 'node-cache'
 
+import { createPublicClient, http } from 'viem'
+import { mainnet } from 'viem/chains'
+
+// 1. ABI mínima para ERC-20: name() y symbol()
+const erc20MinimalAbi = [
+  {
+    "type": "function",
+    "name": "name",
+    "stateMutability": "view",
+    "outputs": [{ "type": "string" }],
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "name": "symbol",
+    "stateMutability": "view",
+    "outputs": [{ "type": "string" }],
+    "inputs": []
+  }
+]
+
+
+
+
+
 const cache = new NodeCache({ stdTTL: 86400 }) // 86400 segundos = 24 horas
 
 const BASE_URL = 'https://raw.githubusercontent.com/ethereum-optimism/superchain-registry/main'
@@ -19,6 +44,47 @@ const NOT_IMPLEMENTED_VALUE = 'Not implemented'
 const NONE_VALUE = 'None'
 const UNKNOWN_VALUE = 'Unknown'
 const SECURITY_COUNCIL = 'Security Council'
+
+const client = createPublicClient({
+  chain: mainnet,
+  transport: http() // Por defecto, usará https://rpc.ankr.com/eth o similar
+})
+
+
+
+async function getCachedTokenInfo(tokenAddress: `0x${string}`): Promise<string> {
+  console.log(tokenAddress)
+  if (cache.has(tokenAddress)) {
+    console.log('In cache' + cache.get(tokenAddress))
+    return cache.get(tokenAddress) ?? ''
+  }
+  let name
+  let symbol
+  try {
+
+    name = await client.readContract({
+      address: tokenAddress,
+      abi: erc20MinimalAbi,
+      functionName: 'name'
+    })
+
+    symbol = await client.readContract({
+      address: tokenAddress,
+      abi: erc20MinimalAbi,
+      functionName: 'symbol'
+    })
+
+  } catch (error) {
+    console.error('Error fetching Gst Token for ', tokenAddress, error)
+    return ''
+  }
+
+  let tokenName = `${name} (${symbol})`;
+  cache.set(tokenAddress, tokenName)
+  return tokenName
+
+}
+
 
 async function getTomlDataCached(url: string): Promise<string> {
   if (cache.has(url)) {
@@ -52,6 +118,8 @@ async function processChain(chain: any): Promise<ChainInfo> {
   chainInfo.status = chainInfo.type = getStatus(chain.identifier)
   chainInfo.configuration = getConfiguration(chain.superchain_level)
   chainInfo.scStatus = chain.superchain_level
+  if (chain.gas_paying_token)
+    chainInfo.gasToken = await getCachedTokenInfo(chain.gas_paying_token)
 
   const detailUrl = `${CONFIGS_URL}/${chain.identifier}${TOML_EXTENSION}`
   return await setChainInfoDetail(detailUrl, chainInfo)
