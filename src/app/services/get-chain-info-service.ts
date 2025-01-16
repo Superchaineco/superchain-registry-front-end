@@ -64,7 +64,7 @@ async function dumpInfo(chainInfo: ChainInfo[]) {
     const spreadsheetId = 'TU_SPREADSHEET_ID_AQUI';
 
 
-    const fecha = new Date().toLocaleString('es-ES'); // Ajusta el formato según necesites
+    const fecha = new Date().toLocaleString('es-ES'); 
     const otroDato = 'Ejemplo de dato desde TS';
 
     const values = [[fecha, otroDato]];
@@ -76,8 +76,8 @@ async function dumpInfo(chainInfo: ChainInfo[]) {
     const request = {
       spreadsheetId,
       range,
-      valueInputOption: 'USER_ENTERED',  // Ajusta cómo quieres que se interpreten los datos
-      insertDataOption: 'INSERT_ROWS',   // Inserta filas en blanco si es necesario
+      valueInputOption: 'USER_ENTERED',  
+      insertDataOption: 'INSERT_ROWS',  
       requestBody: {
         values,
       },
