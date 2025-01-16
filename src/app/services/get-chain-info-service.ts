@@ -87,7 +87,7 @@ async function dumpInfo(chainInfo: ChainInfo[]) {
 
 
     const request = {
-      SHEET_ID,
+      spreadsheetId: SHEET_ID,
       range,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
