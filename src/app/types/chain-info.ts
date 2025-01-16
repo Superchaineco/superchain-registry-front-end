@@ -1,18 +1,16 @@
 export class ChainInfo {
   name!: String
-  layer!: String
-  status!: String
   type!: String
-  configuration!: String
-  upgradeKeys!: String
-  faultProofs!: String
-  decentStage!: String
-  stage!: String
-  charter!: String
-  charterLink!: String
-  dataAvail!: String
-  dataAvailLink!: String
-  blockTime!: String
   scStatus!:String
+  category!:``
+  charter!: String
+  stage!: String
+  faultProofs!: String
+  profitShare!:``
+  dataAvail!: String
+  link!: String
   gasToken!:String
+  s7Eligability!:String
+
+  
 }

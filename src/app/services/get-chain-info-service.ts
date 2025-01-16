@@ -5,8 +5,6 @@ import NodeCache from 'node-cache'
 import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 import { google } from 'googleapis';
-import * as fs from 'fs';
-import * as path from 'path';
 
 
 const erc20MinimalAbi = [
@@ -33,7 +31,7 @@ const CHAIN_LIST_URL = `${BASE_URL}/chainList.toml`
 const CONFIGS_URL = `${BASE_URL}/superchain/configs`
 const TOML_EXTENSION = '.toml'
 const SECURITY_COUNCIL_WALLET = '0x5a0Aae59D09fccBdDb6C6CcEB07B7279367C3d2A'
-
+const SHEET_ID = '1r52je7HThQf-8ks3zlffJ5koIsENd23wHM0aOApvQj0';
 
 
 const STANDARD_VALUE = 'Standard'
@@ -49,45 +47,59 @@ const client = createPublicClient({
 })
 
 
+function convertToSheetData<T extends Record<string, any>>(items: T[]): any[][] {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const headers = Object.keys(items[0]);
+  const rows = [headers];
+
+  for (const item of items) {
+    const row = headers.map((header) => item[header]);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
 async function dumpInfo(chainInfo: ChainInfo[]) {
   try {
 
-    const KEYFILEPATH = path.join(__dirname, '..', 'credentials.json');
+
+    const serviceAccountJsonString = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '';
+    
+    const credentials = JSON.parse(serviceAccountJsonString);
+
     const auth = new google.auth.GoogleAuth({
-      keyFile: KEYFILEPATH,
+      credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    const spreadsheetId = 'TU_SPREADSHEET_ID_AQUI';
+    
+    const values = convertToSheetData(chainInfo);
 
 
-    const fecha = new Date().toLocaleString('es-ES'); 
-    const otroDato = 'Ejemplo de dato desde TS';
-
-    const values = [[fecha, otroDato]];
-
-
-    const range = 'Hoja1!A:B';
+    const range = 'Output new API!A:L';
 
 
     const request = {
-      spreadsheetId,
+      SHEET_ID,
       range,
-      valueInputOption: 'USER_ENTERED',  
-      insertDataOption: 'INSERT_ROWS',  
+      valueInputOption: 'USER_ENTERED',
       requestBody: {
         values,
       },
     };
 
-    await sheets.spreadsheets.values.append(request);
+    await sheets.spreadsheets.values.update(request);
 
-    console.log('Datos agregados correctamente a la hoja de cálculo.');
+    console.log('Google sheet updated!');
   } catch (error) {
-    console.error('Error escribiendo en Google Sheets:', error);
+    console.error('Error Google Sheets:', error);
   }
 }
 
@@ -144,7 +156,9 @@ export async function getChainInfoListService(): Promise<ChainInfo[]> {
       chains.map((chain: any) => processChain(chain)),
     )
 
-    return await Promise.all(chainInfoPromises)
+    let chainsInfo = await Promise.all(chainInfoPromises)
+    dumpInfo(chainsInfo)
+    return chainsInfo
   } catch (error) {
     console.error('Error fetching or parsing TOML:', error)
     throw new Error('Failed to fetch or parse chain list.')
@@ -154,30 +168,33 @@ export async function getChainInfoListService(): Promise<ChainInfo[]> {
 async function processChain(chain: any): Promise<ChainInfo> {
   const chainInfo = new ChainInfo()
   chainInfo.name = chain.name
-  chainInfo.layer = chain.parent?.type || UNKNOWN_VALUE
-  chainInfo.status = chainInfo.type = getStatus(chain.identifier)
-  chainInfo.configuration = getConfiguration(chain.superchain_level)  
-  if (chain.gas_paying_token)
-    chainInfo.gasToken = await getCachedTokenInfo(chain.gas_paying_token)
-
+  chainInfo.type = getStatus(chain.identifier)
   const detailUrl = `${CONFIGS_URL}/${chain.identifier}${TOML_EXTENSION}`
   return await setChainInfoDetail(detailUrl, chainInfo, chain)
 }
 
-async function setChainInfoDetail(url: string, chainInfo: ChainInfo, chain:any): Promise<ChainInfo> {
+async function setChainInfoDetail(url: string, chainInfo: ChainInfo, chain: any): Promise<ChainInfo> {
   try {
     const response = await getTomlDataCached(url)
     const detailData = toml.parse(response)
 
     chainInfo.scStatus = getCScStatus(chain.superchain_level, detailData.standard_chain_candidate)
+    chainInfo.category = ''
     chainInfo.charter = detailData.standard_chain_candidate ? STANDARD_VALUE : NONE_VALUE
-    chainInfo.upgradeKeys = getUpgradeKeys(detailData.addresses)
+    chainInfo.stage = getDecentStage(chainInfo, detailData.addresses)
     chainInfo.faultProofs = getFaultProofs(detailData.addresses)
-    chainInfo.stage = chainInfo.decentStage = getDecentStage(chainInfo)
-    chainInfo.charterLink = ''
+
+    chainInfo.profitShare = ''
     chainInfo.dataAvail = detailData.data_availability_type?.toUpperCase() || UNKNOWN_VALUE
-    chainInfo.dataAvailLink = ''
-    chainInfo.blockTime = `~${detailData.block_time}`
+    chainInfo.link = ''
+    if (chain.gas_paying_token)
+      chainInfo.gasToken = await getCachedTokenInfo(chain.gas_paying_token)
+    else
+      chainInfo.gasToken = ''
+    chainInfo.s7Eligability = ''
+
+
+
 
     return chainInfo
   } catch (error) {
@@ -186,8 +203,8 @@ async function setChainInfoDetail(url: string, chainInfo: ChainInfo, chain:any):
   }
 }
 
-function getDecentStage(chainInfo: ChainInfo): string {
-  if (chainInfo.upgradeKeys === SECURITY_COUNCIL && chainInfo.faultProofs === IMPLEMENTED_VALUE) return 'Stage 1'
+function getDecentStage(chainInfo: ChainInfo, addresses: Record<string, any>): string {
+  if (getUpgradeKeys(addresses) === SECURITY_COUNCIL && chainInfo.faultProofs === IMPLEMENTED_VALUE) return 'Stage 1'
   else return 'Stage 0'
 }
 
@@ -213,6 +230,6 @@ function getConfiguration(superchainLevel: number): string {
 
 function getCScStatus(superchainLevel: number, standard_chain_candidate: boolean): string {
   if (superchainLevel === 1) return 'Green'
-  if(standard_chain_candidate) return 'Yellow'
+  if (standard_chain_candidate) return 'Yellow'
   else return 'Grey'
 }
