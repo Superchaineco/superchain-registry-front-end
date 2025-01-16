@@ -8,7 +8,7 @@ class ChainsOverviewService {
   })
 
   public async getChainsInfo(): Promise<ChainInfo[]> {
-    const response = await this.httpInstance.get<ChainInfo[]>('/get-chain-info')
+    const response = await this.httpInstance.get<ChainInfo[]>('/get-chain-info1')
 
     return response.data
   }
