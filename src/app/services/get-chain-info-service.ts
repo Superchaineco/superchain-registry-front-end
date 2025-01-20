@@ -63,7 +63,7 @@ function convertToSheetData<T extends Record<string, any>>(items: T[]): any[][] 
   return rows;
 }
 
-export async function dumpInfo(chainInfo: ChainInfo[]) {
+export async function dumpInfoIntoGoogleSheet(chainInfo: ChainInfo[]) {
   try {
 
 
