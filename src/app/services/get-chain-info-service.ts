@@ -63,7 +63,7 @@ function convertToSheetData<T extends Record<string, any>>(items: T[]): any[][] 
   return rows;
 }
 
-async function dumpInfo(chainInfo: ChainInfo[]) {
+export async function dumpInfo(chainInfo: ChainInfo[]) {
   try {
 
 
@@ -157,7 +157,6 @@ export async function getChainInfoListService(): Promise<ChainInfo[]> {
     )
 
     let chainsInfo = await Promise.all(chainInfoPromises)
-    dumpInfo(chainsInfo)
     return chainsInfo
   } catch (error) {
     console.error('Error fetching or parsing TOML:', error)

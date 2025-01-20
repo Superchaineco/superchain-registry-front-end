@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
-import { getChainInfoListService } from '../services/get-chain-info-service'
+import { dumpInfo, getChainInfoListService } from '../services/get-chain-info-service'
 
 
 
 export default async function handler() {
-    return NextResponse.json(await getChainInfoListService())
+
+    let result = await getChainInfoListService()
+    dumpInfo(result)
+    return NextResponse.json(result)
 }
