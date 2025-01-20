@@ -3,7 +3,6 @@ import { getChainInfoListService } from '../services/get-chain-info-service'
 
 
 
-export default function handler() {
-
-    return NextResponse.json(await getChainInfoListService())k
+export default async function handler() {
+    return NextResponse.json(await getChainInfoListService())
 }
