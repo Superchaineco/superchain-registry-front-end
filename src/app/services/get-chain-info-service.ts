@@ -68,7 +68,7 @@ export async function dumpInfoIntoGoogleSheet(chainInfo: ChainInfo[]) {
 
 
     const serviceAccountJsonString = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '';
-    
+
     const credentials = JSON.parse(serviceAccountJsonString);
 
     const auth = new google.auth.GoogleAuth({
@@ -79,7 +79,7 @@ export async function dumpInfoIntoGoogleSheet(chainInfo: ChainInfo[]) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    
+
     const values = convertToSheetData(chainInfo);
 
 
@@ -178,20 +178,23 @@ async function setChainInfoDetail(url: string, chainInfo: ChainInfo, chain: any)
     const detailData = toml.parse(response)
 
     chainInfo.scStatus = getCScStatus(chain.superchain_level, detailData.standard_chain_candidate)
-    chainInfo.category = ''
+
     chainInfo.charter = detailData.standard_chain_candidate ? STANDARD_VALUE : NONE_VALUE
     chainInfo.stage = getDecentStage(chainInfo, detailData.addresses)
     chainInfo.faultProofs = getFaultProofs(detailData.addresses)
 
-    chainInfo.profitShare = ''
+
     chainInfo.dataAvail = detailData.data_availability_type?.toUpperCase() || UNKNOWN_VALUE
-    chainInfo.link = ''
+
     if (chain.gas_paying_token)
       chainInfo.gasToken = await getCachedTokenInfo(chain.gas_paying_token)
     else
       chainInfo.gasToken = ''
+    //Manual columns
     chainInfo.s7Eligability = ''
-
+    chainInfo.category = ''
+    chainInfo.link = ''
+    chainInfo.profitShare = ''
 
 
 
